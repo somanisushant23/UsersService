@@ -1,4 +1,4 @@
-package com.godate.godate.utils;
+package com.userservice.utils;
 
 public class UserServiceConstants {
 

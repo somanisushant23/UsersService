@@ -1,4 +1,4 @@
-package com.godate.godate.configs;
+package com.userservice.configs;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

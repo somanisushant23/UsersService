@@ -1,6 +1,6 @@
-package com.godate.godate.exceptions;
+package com.userservice.exceptions;
 
-import com.godate.godate.dtos.ErrorResponse;
+import com.userservice.dtos.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.godate.godate.utils.UserServiceConstants.*;
+import static com.userservice.utils.UserServiceConstants.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

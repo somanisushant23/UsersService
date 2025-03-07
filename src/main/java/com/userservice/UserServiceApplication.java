@@ -1,13 +1,13 @@
-package com.godate.godate;
+package com.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GoDateApplication {
+public class UserServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GoDateApplication.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
     }
 
 }

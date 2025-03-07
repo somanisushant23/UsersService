@@ -1,4 +1,4 @@
-package com.godate.godate.entity;
+package com.userservice.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

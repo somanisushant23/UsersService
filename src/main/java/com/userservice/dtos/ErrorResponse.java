@@ -1,4 +1,4 @@
-package com.godate.godate.dtos;
+package com.userservice.dtos;
 
 import lombok.Getter;
 

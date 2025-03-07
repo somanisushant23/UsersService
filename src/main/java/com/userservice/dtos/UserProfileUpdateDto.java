@@ -1,4 +1,4 @@
-package com.godate.godate.dtos;
+package com.userservice.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
