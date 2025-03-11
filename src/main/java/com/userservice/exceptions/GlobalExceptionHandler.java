@@ -28,10 +28,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         String errorMessage = DATABASE_ERROR;
-        if(ex.getMessage().contains("phone_number")) {
-            errorMessage = DUPLICATE_PHONE_NUMBER;
+        if(ex.getMessage().contains("email")) {
+            errorMessage = DUPLICATE_EMAIL;
         }
         ErrorResponse errorResponse = new ErrorResponse(errorMessage);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
+
+    @ExceptionHandler(IncorrectDataException.class)
+    public ResponseEntity<ErrorResponse> handleIncorrectDataException(IncorrectDataException ex) {
+        String errorMessage = ex.getMessage();
+        ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
 }
