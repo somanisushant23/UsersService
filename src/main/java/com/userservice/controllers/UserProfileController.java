@@ -1,15 +1,15 @@
 package com.userservice.controllers;
 
-import com.userservice.dtos.ApiResponse;
-import com.userservice.dtos.SuccessResponse;
-import com.userservice.dtos.UserProfileDto;
-import com.userservice.dtos.UserProfileUpdateDto;
+import com.userservice.dtos.*;
+import com.userservice.entity.UserProfileEntity;
+import com.userservice.exceptions.IncorrectDataException;
 import com.userservice.services.UserProfileService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequestMapping("/profile")
@@ -23,9 +23,15 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 
-    @PostMapping
+    @PostMapping("signup")
     public ResponseEntity<SuccessResponse> createUserProfile(@Valid @RequestBody UserProfileDto userProfileDto) {
         logger.info("Creating user profile {}", userProfileDto.getEmail());
         return userProfileService.createUserProfile(userProfileDto.getEmail(), userProfileDto.getName(), userProfileDto.getPassword());
+    }
+
+    @PostMapping("signin")
+    public UserProfileEntity loginUser(@Valid @RequestBody LoginProfileDto loginProfileDto) throws IncorrectDataException, HttpServerErrorException {
+        logger.info("Login in user {}", loginProfileDto.getEmail());
+        return userProfileService.loginUser(loginProfileDto.getEmail(), loginProfileDto.getPassword());
     }
 }
