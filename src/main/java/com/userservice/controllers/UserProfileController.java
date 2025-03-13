@@ -30,8 +30,14 @@ public class UserProfileController {
     }
 
     @PostMapping("signin")
-    public UserProfileEntity loginUser(@Valid @RequestBody LoginProfileDto loginProfileDto) throws IncorrectDataException, HttpServerErrorException {
+    public UserProfileResponse loginUser(@Valid @RequestBody LoginProfileDto loginProfileDto) throws IncorrectDataException, HttpServerErrorException {
         logger.info("Login in user {}", loginProfileDto.getEmail());
         return userProfileService.loginUser(loginProfileDto.getEmail(), loginProfileDto.getPassword());
+    }
+
+    @GetMapping
+    public ResponseEntity<UserProfileResponse> getUserProfile(@RequestHeader("email") String email) {
+        logger.info("Get user profile {}", email);
+        return userProfileService.getUserProfile(email);
     }
 }
