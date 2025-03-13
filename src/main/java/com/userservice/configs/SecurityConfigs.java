@@ -1,5 +1,6 @@
 package com.userservice.configs;
 
+import com.userservice.utils.auth.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -25,5 +26,10 @@ public class SecurityConfigs {
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
         );
         return http.build();
+    }
+
+    @Bean
+    public JwtUtils jwtUtils() {
+        return new JwtUtils();
     }
 }
