@@ -1,8 +1,11 @@
 package com.userservice.services;
 
 import com.userservice.dtos.*;
+import com.userservice.entity.Role;
 import com.userservice.entity.UserProfileEntity;
+import com.userservice.entity.enums.UserRole;
 import com.userservice.exceptions.IncorrectDataException;
+import com.userservice.repositories.RoleRepository;
 import com.userservice.repositories.UserProfileRepository;
 import com.userservice.utils.auth.JwtUtils;
 import org.slf4j.Logger;
@@ -14,10 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.userservice.utils.UserServiceConstants.*;
 
@@ -27,14 +27,16 @@ public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 
     private final UserProfileRepository userProfileRepository;
+    private final RoleRepository roleRepository;
 
     private final JwtUtils jwtUtils;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserProfileService(UserProfileRepository userProfileRepository, JwtUtils jwtUtils) {
+    public UserProfileService(UserProfileRepository userProfileRepository, RoleRepository roleRepository, JwtUtils jwtUtils) {
         this.userProfileRepository = userProfileRepository;
+        this.roleRepository = roleRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -46,12 +48,21 @@ public class UserProfileService {
         userProfileEntity.setEmail(email);
         userProfileEntity.setCreatedOn(new Date());
         userProfileEntity.setLastUpdatedOn(new Date());
+        userProfileEntity.setRoles(getExistingRoles());
 
         logger.info("Creating user profile: {}", userProfileEntity);
         userProfileRepository.save(userProfileEntity);
         logger.info("Profile created");
         SuccessResponse successResponse = new SuccessResponse(USER_CREATED);
         return ResponseEntity.status(HttpStatus.CREATED).body(successResponse);
+    }
+
+    private Set<Role> getExistingRoles() {
+        Role role = roleRepository.findByRole("USER")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        return roles;
     }
 
     public UserProfileResponse loginUser(String email, String password) throws IncorrectDataException, HttpServerErrorException {

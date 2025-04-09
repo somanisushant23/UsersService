@@ -11,4 +11,5 @@ import lombok.*;
 @JsonDeserialize(as = Role.class)
 public class Role extends BaseModelEntity {
     private String role;
+
 }
