@@ -1,7 +1,6 @@
 package com.userservice.controllers;
 
 import com.userservice.dtos.*;
-import com.userservice.entity.UserProfileEntity;
 import com.userservice.exceptions.IncorrectDataException;
 import com.userservice.services.UserProfileService;
 import jakarta.validation.Valid;
