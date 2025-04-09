@@ -1,11 +1,14 @@
 package com.userservice.configs;
 
+import com.userservice.dtos.UserProfileResponse;
 import com.userservice.utils.auth.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,6 +19,9 @@ public class HttpInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpInterceptor.class);
     private String requestId;
@@ -47,9 +53,22 @@ public class HttpInterceptor implements HandlerInterceptor {
     }
 
     private boolean isValid(String token, String headerEmail) {
-        boolean isTokenValid = jwtUtils.validateToken(token, headerEmail);
-        logger.info("Token isValid: {}", isTokenValid);
-        return isTokenValid;
+        // before validating, check redis cache
+        HashOperations<String, Object, UserProfileResponse> userHashOps = redisTemplate.opsForHash();
+        UserProfileResponse userProfileResponse = userHashOps.get("USERS", headerEmail);
+        if(userProfileResponse.getToken().equals(token) &&
+                userProfileResponse.getEmail().equals(headerEmail)) {
+            return true;
+        } else {
+            //user not found in redis
+            boolean isTokenValid = jwtUtils.validateToken(token, headerEmail);
+            logger.info("Token isValid: {}", isTokenValid);
+            if(isTokenValid) {
+                // store in redis
+                userHashOps.put("USERS", headerEmail, userProfileResponse);
+            }
+            return isTokenValid;
+        }
     }
 
     private boolean shouldSkipAuth(HttpServletRequest request) {

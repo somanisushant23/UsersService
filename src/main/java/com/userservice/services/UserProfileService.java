@@ -11,6 +11,7 @@ import com.userservice.utils.auth.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,16 +29,19 @@ public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final JwtUtils jwtUtils;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserProfileService(UserProfileRepository userProfileRepository, RoleRepository roleRepository, JwtUtils jwtUtils) {
+    public UserProfileService(UserProfileRepository userProfileRepository, RoleRepository roleRepository,
+                              JwtUtils jwtUtils, RedisTemplate<String, Object> redisTemplate) {
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
         this.jwtUtils = jwtUtils;
+        this.redisTemplate = redisTemplate;
     }
 
     public ResponseEntity<SuccessResponse> createUserProfile(String email, String name, String password) {
@@ -80,8 +84,9 @@ public class UserProfileService {
             userProfileResponse.setName(user.getName());
             String token = jwtUtils.createToken(user.getEmail(), getClaims(user.getName()));
             userProfileResponse.setToken(token);
+            // store user data in redis cache
+            redisTemplate.opsForHash().put("USERS", user.getEmail(), userProfileResponse);
             return userProfileResponse;
-
         } else {
             // throw incorrect password exception
             throw new IncorrectDataException(USER_NOT_AUTHORIZED);
